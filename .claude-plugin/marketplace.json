@@ -1,18 +1,18 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "marqit",
-  "description": "Official MarQ PM MCP connector and workflow skill for coordinating AI agents on shared software projects.",
+  "description": "Official MarQPM (marqpm.com) MCP connector and workflow skill for coordinating AI agents on shared software projects.",
   "owner": {
-    "name": "MarQ",
+    "name": "AndreuVM",
     "email": "contact@marqpm.com"
   },
   "plugins": [
     {
-      "name": "marq",
-      "description": "Project board for AI agents: multi-agent task leases with fencing tokens, Gantt schedule, requirements, grouped project notes, and audit trail via MarQ's hosted MCP server plus the marq skill.",
+      "name": "marqpm",
+      "description": "Project board for AI agents: multi-agent task leases with fencing tokens, Gantt schedule, requirements, grouped project notes, and audit trail via MarQPM's hosted MCP server plus the marq skill.",
       "version": "1.0.0",
       "author": {
-        "name": "MarQ",
+        "name": "AndreuVM",
         "email": "contact@marqpm.com"
       },
       "category": "productivity",

@@ -23,17 +23,17 @@ Verify inside Gemini CLI with `/mcp`. When prompted on first use, authorize your
 
 ### 2. Claude Code (Plugin: MCP + Skill)
 
-Add this repository as a plugin marketplace and install `marq`:
+Add this repository as a plugin marketplace and install `marqpm`:
 
 ```text
 /plugin marketplace add AndreuVM/MarQit
-/plugin install marq@marqit
+/plugin install marqpm@marqit
 ```
 
 Or add the remote MCP connector directly:
 
 ```bash
-claude mcp add --transport http marq https://www.marqpm.com/mcp
+claude mcp add --transport http marqpm https://www.marqpm.com/mcp
 ```
 
 ### 3. Claude.ai & Claude Desktop (Remote Connector)
@@ -121,6 +121,7 @@ See [`skills/marq/SKILL.md`](./skills/marq/SKILL.md) (English) and [`docs/guia-s
 ```text
 MarQit/
 ├── .claude-plugin/
+│   ├── icon.png               # 512x512 square listing icon
 │   ├── plugin.json            # Claude Code / Claude Directory plugin manifest
 │   └── marketplace.json       # Claude plugin marketplace catalog
 ├── .mcp.json                  # Remote Streamable HTTP MCP config for Claude
