@@ -1,0 +1,10 @@
+{
+  "name": "marq",
+  "version": "1.0.0",
+  "description": "Project board for AI agents with task leases, fencing tokens, Gantt schedule, requirements, notes and full audit log over MCP.",
+  "mcpServers": {
+    "marq": {
+      "httpUrl": "https://www.marqpm.com/mcp"
+    }
+  }
+}

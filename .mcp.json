@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "marq": {
+      "type": "http",
+      "url": "https://www.marqpm.com/mcp"
+    }
+  }
+}

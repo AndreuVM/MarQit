@@ -1,8 +1,3 @@
----
-name: marq
-description: Cómo un agente de IA debe usar las herramientas MCP de MarQ PM (tareas, reservas entre agentes, cronograma, etiquetas, requisitos, notas) y los comandos "marq it", "marq status", "marq next", etc. Úsala siempre que el usuario mencione MarQ, pida actualizar el tablero o el estado del proyecto, o escriba un comando que empiece por "marq".
----
-
 # MarQ — skill para agentes
 
 MarQ es el tablero de proyectos de este equipo. Tú trabajas en el código; MarQ guarda el estado real del trabajo para que las personas y otros agentes lo vean. Esta skill te dice **cómo usar sus herramientas MCP** (`pm_*`) y **qué hacer cuando el usuario escribe un comando `marq ...`**.
@@ -99,19 +94,19 @@ Son dos cosas **distintas**; no las mezcles.
 - Marcar una tarea como `done` **no** marca el requisito como cumplido: el requisito se cumple cuando tú compruebas la condición, normalmente con todas sus tareas hechas. Antes de marcarlo, revisa sus tareas con `pm_list_tasks { requirements: [...] }`.
 - Los requisitos no necesitan reserva ni tienen fechas ni dependencias. `pm_get_project_tree` incluye `requirements_summary` y las etiquetas más usadas.
 
-### 1.4d Notas del proyecto (ideas rápidas)
-Una **nota** es una idea que se te ocurre al momento y que **todavía no está detallada** como una tarea: algo para implementar o revisar más adelante. Aparecen en la pestaña **Notas** del proyecto y las pueden crear tanto las personas como tú. No son tareas, ni requisitos, ni las anotaciones de una tarea (`pm_add_future_note`).
-- `pm_list_notes { projectId, status?, all? }` → por defecto las **abiertas** (pendientes de detallar), de la más reciente a la más antigua, con código `N-003`, título, un extracto del contenido y las tareas ancladas. `status` = `open` | `converted` | `archived`; `all: true` trae todas. `pm_get_project_tree` incluye `notes_summary` (cuántas hay en cada estado).
-- `pm_get_note { projectId, noteId }`: la nota entera (contenido completo y tareas ancladas con su estado). Léela antes de detallarla.
-- `pm_add_note { projectId, title, content?, tasks? }`: apunta una idea. Basta una línea en `title`; añade `content` solo si tienes detalle que merezca conservarse. Si ya está clara y es trabajo a realizar, es una **tarea** (`pm_create_task`); si es una condición que el proyecto debe cumplir, un **requisito**.
-- **Detallar una nota en tareas concretas:** lee la nota (`pm_get_note`), crea las tareas (`pm_create_task`) y después `pm_update_note { projectId, noteId, addTasks: ["R-021", "R-022"], status: "converted" }`. Las tareas quedan **ancladas** a la nota y la nota pasa a `converted`.
-- **Anclar una tarea como mera referencia** (`addTasks`) **no** cambia el estado de la nota: solo marca `converted` cuando la idea ya está detallada. `removeTasks` desancla. Una tarea que no existe en el proyecto es un error y no se guarda nada. Desde la tarea, `pm_get_task` muestra `linked_notes` con los códigos de las notas que la mencionan.
-- `status: "archived"` para una idea descartada (no se pierde) y `"open"` para reabrirla. `pm_delete_note` solo si el usuario lo pide.
+### 1.4d Notas del proyecto (ideas, bugs, informativas y mejoras)
+Una **nota** recoge una idea nueva, un bug detectado, una nota informativa (por ejemplo sobre alguna tarea) o una mejora pendiente que **todavía no está detallada** como tarea ejecutable. Aparecen en la pestaña **Notas** del proyecto, se clasifican por grupo (`group`: `idea` | `bug` | `info` | `improvement`) y las pueden crear tanto las personas como tú. No son tareas, ni requisitos, ni las anotaciones internas de una tarea (`pm_add_future_note`).
+- `pm_list_notes { projectId, status?, group?, all? }` → por defecto las **abiertas** (pendientes de detallar), de la más reciente a la más antigua, con código `N-003`, título, `group`, un extracto del contenido y las tareas ancladas. `status` = `open` | `converted` | `archived`; `group` = `idea` | `bug` | `info` | `improvement`; `all: true` trae todas. `pm_get_project_tree` incluye `notes_summary` (cuántas hay en cada estado y en `by_group`).
+- `pm_get_note { projectId, noteId }`: la nota entera (contenido completo, grupo, estado y tareas ancladas con su estado). Léela antes de detallarla.
+- `pm_add_note { projectId, title, content?, group?, tasks? }`: apunta una nota clasificándola con `group` (`idea` por defecto, `bug` para errores detectados, `info` para contexto o notas informativas sobre tareas, `improvement` para mejoras técnicas). Basta una línea en `title`; añade `content` solo si tienes detalle que merezca conservarse. Si ya está clara y es trabajo a realizar, es una **tarea** (`pm_create_task`); si es una condición que el proyecto debe cumplir, un **requisito**.
+- **Detallar una nota en tareas concretas:** lee la nota (`pm_get_note`), crea las tareas (`pm_create_task`) y después `pm_update_note { projectId, noteId, addTasks: ["R-021", "R-022"], status: "converted" }`. Las tareas quedan **ancladas** a la nota y la nota pasa a `converted`. También puedes cambiar `group` con `pm_update_note`.
+- **Anclar una tarea como mera referencia** (`addTasks`) **no** cambia el estado de la nota: solo marca `converted` cuando la idea o el bug ya está detallado en tareas. `removeTasks` desancla. Una tarea que no existe en el proyecto es un error y no se guarda nada. Desde la tarea, `pm_get_task` muestra `linked_notes` con los códigos de las notas que la mencionan.
+- `status: "archived"` para una nota descartada (no se pierde) y `"open"` para reabrirla. `pm_delete_note` solo si el usuario lo pide.
 - No necesitan reserva ni tienen fechas ni dependencias. Cada proyecto admite hasta 500 notas.
 
 ### 1.5 Tiempo, anotaciones y avisos
 - `pm_log_time_spent`: solo tiempo que **sabes** que se ha dedicado (medido en la sesión o dicho por el usuario). No estimes a ojo ni imputes por defecto.
-- `pm_add_future_note`: decisiones, riesgos, prerrequisitos e ideas (`category`: `future_idea`, `prerequisite`, `risk`, `architecture`, `general`). Son anotaciones de **una tarea** (no son las notas del proyecto de 1.4d) y **no** requieren reserva. Úsalas en vez de ensanchar la descripción.
+- `pm_add_future_note`: decisiones, bugs, riesgos, prerrequisitos e ideas (`category`: `future_idea`, `bug`, `prerequisite`, `risk`, `architecture`, `general`). Son anotaciones de **una tarea** (no son las notas del proyecto de 1.4d) y **no** requieren reserva. Úsalas en vez de ensanchar la descripción.
 - `pm_broadcast_notification`: solo para avisos que las personas deban ver sí o sí (despliegue, bloqueo crítico). Un aviso por evento; no lo uses como log.
 - `pm_get_user_notifications` con tu identidad (`agent:<id>`) al empezar una sesión larga para ver si te avisaron de reservas vencidas.
 

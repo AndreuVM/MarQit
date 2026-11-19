@@ -1,0 +1,22 @@
+{
+  "name": "marq",
+  "version": "1.0.0",
+  "description": "MarQ PM project board for AI agents. Connects to MarQ's hosted Streamable HTTP MCP server (https://www.marqpm.com/mcp) and installs the marq workflow skill to coordinate multiple AI agents safely using task leases with fencing tokens, Gantt schedules, requirements, grouped project notes, and full audit history.",
+  "author": {
+    "name": "MarQ",
+    "email": "contact@marqpm.com",
+    "url": "https://www.marqpm.com"
+  },
+  "homepage": "https://www.marqpm.com",
+  "repository": "https://github.com/AndreuVM/MarQit",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "project-management",
+    "ai-agents",
+    "kanban",
+    "gantt",
+    "task-leases",
+    "fencing-tokens"
+  ]
+}

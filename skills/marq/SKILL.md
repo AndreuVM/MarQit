@@ -1,13 +1,13 @@
 ---
 name: marq
-description: How an AI agent should use the MarQ PM MCP tools (tasks, multi-agent leases, schedule, tags, requirements, notes) and the "marq it", "marq status", "marq next" commands. Use it whenever the user mentions MarQ, asks to update the board or the project status, or types a command starting with "marq".
+description: How an AI agent should use the MarQ PM MCP tools (tasks, multi-agent leases, schedule, tags, requirements, notes) and the "marq it", "marq status", "marq next" commands. Use it whenever the user mentions MarQ, asks to update the board or the project status, or types a command starting with "marq" (in English or Spanish, e.g. "haz un marq").
 ---
 
 # MarQ — skill for agents
 
 MarQ is this team's project board. You work on the code; MarQ keeps the real state of the work so that people and other agents can see it. This skill tells you **how to use its MCP tools** (`pm_*`) and **what to do when the user types a `marq ...` command**.
 
-Guiding principle: **MarQ must reflect reality, not your intentions.** You only change a task's status with evidence (a commit, tests, a file, something the user told you). If there is none, don't mark it.
+Guiding principle: **MarQ must reflect reality, not your intentions.** You only change a task's status with evidence (a commit, tests, a file, something the user told you). If there is none, don't mark it. Always reply in the user's language (e.g. English or Spanish) and interpret natural-language triggers in either language (`marq it`, `haz un marq`, `marq status`, `marq next`).
 
 ---
 
@@ -99,19 +99,19 @@ These are two **different** things; don't mix them up.
 - Marking a task `done` does **not** mark the requirement as met: a requirement is met when you check its condition, normally with all its tasks done. Before marking it, review its tasks with `pm_list_tasks { requirements: [...] }`.
 - Requirements need no lease and have no dates or dependencies. `pm_get_project_tree` includes `requirements_summary` and the most used tags.
 
-### 1.4d Project notes (quick ideas)
-A **note** is an idea that comes up on the spot and is **not detailed yet** like a task: something to implement or review later. They appear in the project's **Notes** tab and both people and you can create them. They are not tasks, nor requirements, nor the annotations of a task (`pm_add_future_note`).
-- `pm_list_notes { projectId, status?, all? }` → by default the **open** ones (waiting to be detailed), newest first, with code `N-003`, title, a content excerpt and the pinned tasks. `status` = `open` | `converted` | `archived`; `all: true` returns all of them. `pm_get_project_tree` includes `notes_summary` (how many there are in each status).
-- `pm_get_note { projectId, noteId }`: the whole note (full content and pinned tasks with their status). Read it before detailing it.
-- `pm_add_note { projectId, title, content?, tasks? }`: jot down an idea. One line in `title` is enough; add `content` only if you have detail worth keeping. If it is already clear and is work to do, it is a **task** (`pm_create_task`); if it is a condition the project must satisfy, a **requirement**.
-- **Detailing a note into concrete tasks:** read the note (`pm_get_note`), create the tasks (`pm_create_task`) and then `pm_update_note { projectId, noteId, addTasks: ["R-021", "R-022"], status: "converted" }`. The tasks stay **pinned** to the note and the note becomes `converted`.
-- **Pinning a task as mere reference** (`addTasks`) does **not** change the note's status: only mark `converted` when the idea has been detailed. `removeTasks` unpins. A task that does not exist in the project is an error and nothing is saved. From the task, `pm_get_task` shows `linked_notes` with the codes of the notes that mention it.
-- `status: "archived"` for a discarded idea (it is not lost) and `"open"` to reopen it. `pm_delete_note` only if the user asks.
+### 1.4d Project notes (ideas, bugs, informative notes and improvements)
+A **note** captures a new idea, a bug found, an informative note (for instance about a task) or a pending improvement that is **not detailed yet** into an executable task. They appear in the project's **Notes** tab, are classified by group (`group`: `idea` | `bug` | `info` | `improvement`), and both people and you can create them. They are not tasks, nor requirements, nor the internal annotations of a task (`pm_add_future_note`).
+- `pm_list_notes { projectId, status?, group?, all? }` → by default the **open** ones (waiting to be detailed), newest first, with code `N-003`, title, `group`, a content excerpt and the pinned tasks. `status` = `open` | `converted` | `archived`; `group` = `idea` | `bug` | `info` | `improvement`; `all: true` returns all of them. `pm_get_project_tree` includes `notes_summary` (how many there are in each status and in `by_group`).
+- `pm_get_note { projectId, noteId }`: the whole note (full content, group, status and pinned tasks with their status). Read it before detailing it.
+- `pm_add_note { projectId, title, content?, group?, tasks? }`: jot down a note classifying it with `group` (`idea` by default, `bug` for bugs found, `info` for informative notes/context about tasks, `improvement` for technical refinements). One line in `title` is enough; add `content` only if you have detail worth keeping. If it is already clear and is work to do, it is a **task** (`pm_create_task`); if it is a condition the project must satisfy, a **requirement**.
+- **Detailing a note into concrete tasks:** read the note (`pm_get_note`), create the tasks (`pm_create_task`) and then `pm_update_note { projectId, noteId, addTasks: ["R-021", "R-022"], status: "converted" }`. The tasks stay **pinned** to the note and the note becomes `converted`. You can also change `group` via `pm_update_note`.
+- **Pinning a task as mere reference** (`addTasks`) does **not** change the note's status: only mark `converted` when the idea or bug has been detailed into tasks. `removeTasks` unpins. A task that does not exist in the project is an error and nothing is saved. From the task, `pm_get_task` shows `linked_notes` with the codes of the notes that mention it.
+- `status: "archived"` for a discarded note (it is not lost) and `"open"` to reopen it. `pm_delete_note` only if the user asks.
 - They need no lease and have no dates or dependencies. Each project allows up to 500 notes.
 
 ### 1.5 Time, annotations and alerts
 - `pm_log_time_spent`: only time you **know** was spent (measured in the session or stated by the user). Don't estimate by eye or log by default.
-- `pm_add_future_note`: decisions, risks, prerequisites and ideas (`category`: `future_idea`, `prerequisite`, `risk`, `architecture`, `general`). They are annotations on **one task** (not the project notes of 1.4d) and do **not** need a lease. Use them instead of bloating the description.
+- `pm_add_future_note`: decisions, bugs, risks, prerequisites and ideas (`category`: `future_idea`, `bug`, `prerequisite`, `risk`, `architecture`, `general`). They are annotations on **one task** (not the project notes of 1.4d) and do **not** need a lease. Use them instead of bloating the description.
 - `pm_broadcast_notification`: only for alerts people must see (a deployment, a critical blocker). One alert per event; don't use it as a log.
 - `pm_get_user_notifications` with your identity (`agent:<id>`) at the start of a long session to see whether you were warned about expired leases.
 
