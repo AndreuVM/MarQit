@@ -2,7 +2,7 @@
   "mcpServers": {
     "marqpm": {
       "type": "http",
-      "url": "https://www.marqpm.com/mcp"
+      "url": "https://marqpm.com/mcp"
     }
   }
 }
