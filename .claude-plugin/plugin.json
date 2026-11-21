@@ -6,10 +6,10 @@
   "author": {
     "name": "AndreuVM",
     "email": "contact@marqpm.com",
-    "url": "https://www.marqpm.com"
+    "url": "https://marqpm.com"
   },
-  "homepage": "https://www.marqpm.com",
-  "privacyPolicyUrl": "https://www.marqpm.com/en/legal/privacy",
+  "homepage": "https://marqpm.com",
+  "privacyPolicyUrl": "https://marqpm.com/en/legal/privacy",
   "repository": "https://github.com/AndreuVM/MarQit",
   "license": "MIT",
   "keywords": [
